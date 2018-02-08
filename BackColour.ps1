@@ -1,12 +1,19 @@
 ﻿#$DebugPreference='SilentlyContinue'
 
+$log="$env:TEMP\Backcolor.log"
+Start-Transcript $log -Append
+
+'----'
+$Host.name
 $Title = 'BackColour'
 $Version = '2.0'
-$Link = 'https://www.google.co.uk'
+$Link = 'https://github.com/berny57/BC2'
 $Icon = "$PSScriptRoot\TintedWindow.ico"
 $AutoStart = $False
 $Script=$PSCommandPath
-$log="$env:TEMP\Backcolor.log"
+
+
+
 
 "$Title v$Version : $Link"
 
@@ -137,14 +144,14 @@ Set-OSCWindowColor -R $Blue -G $Red -B $Green  ######  For test purposes these a
 #endregion
 
 #logging
-"Colour applied by event handler"|out-file $Log -Append
+"Colour applied by event handler"  #|out-file $Log -Append
 }
 #endregion Build $EventAction code block
 
 #$EventAction|Out-File -FilePath "$PSScriptRoot\EventAction.ps1" -Width 300
 
 #logging
-"EventAction created"|out-file $Log -Append
+"EventAction created"#|out-file $Log -Append
 
  
 #region Event handler to detect SessionSwitch events
@@ -153,14 +160,14 @@ Set-OSCWindowColor -R $Blue -G $Red -B $Green  ######  For test purposes these a
 $Null = Register-ObjectEvent -InputObject ([Microsoft.Win32.SystemEvents]) -EventName "SessionSwitch" -Action $EventAction 
 
 #logging
-Get-EventSubscriber | Where-Object {$_.SourceObject -eq [Microsoft.Win32.SystemEvents]}|out-file $Log -Append
+Get-EventSubscriber | Where-Object {$_.SourceObject -eq [Microsoft.Win32.SystemEvents]}#|out-file $Log -Append
 $Job=$Events | Select-Object -ExpandProperty Action 
-$Job|out-file $Log -Append
+$Job#|out-file $Log -Append
 
 #endregion Event handler to detect SessionSwitch events
 
 #logging
-"Eventhandler registered"|out-file $Log -Append
+"Eventhandler registered"#|out-file $Log -Append
 
 #region Display form in it's own RunSpace
 
@@ -189,7 +196,7 @@ $RunSpace.SessionStateProxy.SetVariable("log", $log)
 #endregion Create the RunSpace
 
 #logging
-"Runspace created"|out-file $Log -Append
+"Runspace created"#|out-file $Log -Append
 
 #  Create the $FormCcode code block. This will be passed to the RunSpace for execution
 $FormCode = {
@@ -313,7 +320,7 @@ Function Get-cpColor()
     $ColorRGB = Get-cpColor 'Window'
     Set-OSCWindowColor -R $ColorRGB[0] -G $ColorRGB[1] -B $ColorRGB[2]  
     #logging
-    "Colour sduring form load"|out-file $Log -Append
+    "Colour sduring form load"#|out-file $Log -Append
 
 
     #endregion
@@ -336,7 +343,7 @@ Function PickColor()
     {
         Set-OSCWindowColor -R $ColorDialog.Color.R -G $ColorDialog.Color.G -B $ColorDialog.Color.B # You can read the colordialog RGB
         #logging
-        "Colour set by colour picker"|out-file $Log -Append
+        "Colour set by colour picker"#|out-file $Log -Append
     }
 
 }
@@ -450,7 +457,7 @@ Function UpdateStartup($AutoStart, $LinkFile, $LinkTarget, $LinkArg)
     [void][System.Windows.Forms.Application]::Run($Form)
 
     #logging
-    "Form created"|out-file $Log -Append
+    "Form created"#|out-file $Log -Append
 }
 
 
@@ -471,7 +478,7 @@ do {} until ($Job.IsCompleted)
 #$FormCode|out-file $PSScriptRoot\FormCode.ps1
 
 #logging
-"FormAction created"|out-file $Log -Append
+"FormAction created"#|out-file $Log -Append
 
 
 #region Delete the event subscription
@@ -483,4 +490,7 @@ $Jobs|Remove-Job
 #endregion Delete the event subscription
 
 #logging
-"Event handler deleted"|out-file $Log -Append
+"Event handler deleted"#|out-file $Log -Append
+
+'-----'
+Stop-Transcript
